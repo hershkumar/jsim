@@ -1,9 +1,9 @@
 using GLMakie, BenchmarkTools, Printf
 
-const LENGTH::Int64 = 100 # width of the lattice
-const STRENGTH::Float64 = 1.0 # >1 -> ferromagnetic, <1 -> antiferromagnetic
+const LENGTH::Int64 = 1000 # width of the lattice
+const STRENGTH::Float64 = 2.0 # >1 -> ferromagnetic, <1 -> antiferromagnetic
 const EXTERNAL::Float64 = 0.0 # external magnetic field
-const ITERATIONS::Int64 = 10^7 # how long to run the model for
+const ITERATIONS::Int64 = 10^10 # how long to run the model for
 
 # define a structure for the spin system
 mutable struct SpinSystem
@@ -81,7 +81,7 @@ function main()
     # create a spin system 
     system = init_spin_system(LENGTH,STRENGTH,EXTERNAL)
     # make an observable for the spins
-    s_obs = Node(system.spins)
+    s_obs = Observable(system.spins)
     # create the figure and axis
     fig = Figure(resolution = (800, 800))
     ax = Axis(fig[1, 1])
@@ -105,6 +105,10 @@ function main()
         elseif rand() < exp(-delta)
             system.spins[i, j] *= -1
         end
-        s_obs[] = system.spins
+        # only update the graph every 100 updates
+        println("updating...")
+        # if mod(iteration, 10) == 0
+            s_obs[] = system.spins
+        # end
     end
 end

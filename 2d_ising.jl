@@ -1,7 +1,7 @@
 using GLMakie, BenchmarkTools, Printf
 
-const LENGTH::Int64 = 1000 # width of the lattice
-const STRENGTH::Float64 = 2.0 # >1 -> ferromagnetic, <1 -> antiferromagnetic
+const LENGTH::Int64 = 250 # width of the lattice
+const STRENGTH::Float64 = 5.0 # >1 -> ferromagnetic, <1 -> antiferromagnetic
 const EXTERNAL::Float64 = 0.0 # external magnetic field
 const ITERATIONS::Int64 = 10^10 # how long to run the model for
 
@@ -19,7 +19,6 @@ function init_spin_system(L::Int64, J::Float64, h::Float64)
     spins = rand([-1, 1], L, L)
     return SpinSystem(spins, J, h, L)
 end
-
 
 function get_neighbors(i::Int64, j::Int64, L::Int64)
     # get the neighbors of the lattice site (i, j)
@@ -40,7 +39,6 @@ function compute_energy(system::SpinSystem)
             energy += -system.h * system.spins[i, j]
         end
     end 
-
     return energy
 end
 
@@ -48,7 +46,7 @@ function delta_e(system::SpinSystem, i::Int64, j::Int64)
     # compute the change in energy if the spin at (i, j) is flipped
     delta = 0.0
     for neighbor in get_neighbors(i, j, system.L)
-        delta += -system.J * system.spins[i,j]*(-system.spins[neighbor[1], neighbor[2]])
+        delta += -system.J * system.spins[i,j] * (-system.spins[neighbor[1], neighbor[2]])
     end
     delta += -2*system.h * system.spins[i, j]
 end
